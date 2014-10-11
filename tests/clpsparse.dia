@@ -1,0 +1,116 @@
+-nsp->// -*- Mode: scilab -*-
+-nsp->// Copyright (C) 2014-2014 Jean-Philippe Chancelier Enpc/Cermics
+-nsp->//
+-nsp->// This program is free software; you can redistribute it and/or modify
+-nsp->// it under the terms of the GNU General Public License as published by
+-nsp->// the Free Software Foundation; either version 2 of the License, or
+-nsp->// (at your option) any later version.
+-nsp->//
+-nsp->// This program is distributed in the hope that it will be useful,
+-nsp->// but WITHOUT ANY WARRANTY; without even the implied warranty of
+-nsp->// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-nsp->// GNU General Public License for more details.
+-nsp->//
+-nsp->// You should have received a copy of the GNU General Public License
+-nsp->// along with this program; if not, write to the Free Software
+-nsp->// Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+-nsp->load_toolbox('nspcoinor');
+-nsp->libname='nspcplex'
+-nsp->libtitle='nspcplex toolbox';
+-nsp->// macros. 
+-nsp->//add_lib('macros',compile=%t);
+-nsp->// loader for src 
+-nsp->exec('src/loader.sce');
+-nsp->// this loader is not generated 
+-nsp->// we have added the global=%t option 
+-nsp->// because some other dynamic libraries 
+-nsp->// may want to use symbols defined internally here.
+-nsp->libcoinor_path=file('join',['.','libcoinor'+%shext]);
+-nsp->addinter(libcoinor_path,'libcoinor',global=%t);
+-nsp->clear libcoinor_path;
+-nsp->clear libcoinor_path;
+-nsp->printf(libtitle+' loaded\n');
+nspcplex toolbox loaded
+-nsp->// clp matrix description 
+-nsp->// similar to spget_mtlb 
+-nsp->// but cmatbeg and cmatind are int32 matrices here
+-nsp->function [cmatbeg,cmatind,cmatval]=clpsparse_soft(A)
+==>  function y=rem(a,b); y = modulo(a,b);endfunction;
+==>// A=[1,0,0;3,4,9;0,1,2];
+==>  cmatcnt = sum(A ~= 0,1);
+==>  cmatbeg = full(cumsum([0 cmatcnt]));
+==>  cmatbeg = cmatbeg(:)';
+==>  nzA = find(A);
+==>  cmatind = full(rem(nzA-1,size(A,1))');
+==>  cmatind = cmatind(:)';
+==>  cmatval = full(A(nzA));
+==>  cmatval = cmatval(:)';
+==>  //
+==>  cmatind= m2i(cmatind);
+==>  cmatbeg= m2i(cmatbeg);
+==>endfunction;
+-nsp->A=[1,0,0;3,4,9;0,1,2];
+-nsp->A1=[0,0,0;5,0,0;5,1,2];
+-nsp->// test 1
+-nsp->[beg,ind,val]=clpsparse_soft(A);
+-nsp->[beg1,ind1,val1]=clp_sparse(A);
+-nsp->if beg<>beg1 then pause;end 
+-nsp->if ind<>ind1 then pause;end 
+-nsp->if val<>val1 then pause;end 
+-nsp->[beg1,ind1,val1]=clp_sparse(sparse(A));
+-nsp->if beg<>beg1 then pause;end 
+-nsp->if ind<>ind1 then pause;end 
+-nsp->if val<>val1 then pause;end 
+-nsp->// test2
+-nsp->[beg,ind,val]=clpsparse_soft([A1;A]);
+-nsp->[beg1,ind1,val1]=clp_sparse2(A,A1);
+-nsp->if beg<>beg1 then pause;end 
+-nsp->if ind<>ind1 then pause;end 
+-nsp->if val<>val1 then pause;end 
+-nsp->[beg1,ind1,val1]=clp_sparse2(sparse(A),sparse(A1));
+-nsp->if beg<>beg1 then pause;end 
+-nsp->if ind<>ind1 then pause;end 
+-nsp->if val<>val1 then pause;end 
+-nsp->A=[1,0,0,5;3,0,4,9;0,1,5,2];
+-nsp->// test3 
+-nsp->[beg,ind,val]=clpsparse_soft(A);
+-nsp->[beg1,ind1,val1]=clp_sparse(A);
+-nsp->if beg<>beg1 then pause;end 
+-nsp->if ind<>ind1 then pause;end 
+-nsp->if val<>val1 then pause;end 
+-nsp->// test 4 
+-nsp->[beg1,ind1,val1]=clp_sparse(sparse(A));
+-nsp->if beg<>beg1 then pause;end 
+-nsp->if ind<>ind1 then pause;end 
+-nsp->if val<>val1 then pause;end 
+-nsp->// test 5
+-nsp->[beg,ind,val]=clpsparse_soft([A;A]);
+-nsp->[beg1,ind1,val1]=clp_sparse2(A,A);
+-nsp->if beg<>beg1 then pause;end 
+-nsp->if ind<>ind1 then pause;end 
+-nsp->if val<>val1 then pause;end 
+-nsp->[beg1,ind1,val1]=clp_sparse2(sparse(A),sparse(A));
+-nsp->if beg<>beg1 then pause;end 
+-nsp->if ind<>ind1 then pause;end 
+-nsp->if val<>val1 then pause;end 
+-nsp->// from beg,ind,val to sparse 
+-nsp->function A=sparse_from_triplet(m,n,beg,ind,val)
+==>  ind=ind(:);val=val(:);
+==>  IJ=[];
+==>  V=[];
+==>  for j=1:n
+==>    cstart=beg(j);
+==>    cend=beg(j+1);
+==>    ij=ind(cstart+1:cend)+1;
+==>    ij=[ij,j*ones(size(ij,'*'),1)];
+==>    IJ=[IJ;ij];
+==>    V=[V;val(cstart+1:cend)];
+==>  end
+==>  A=sparse(IJ,V,[m,n]);
+==>endfunction;
+-nsp->A=[1,0,0;3,4,9;0,1,2];
+-nsp->// test 1
+-nsp->[beg,ind,val]=clp_sparse(A);
+-nsp->[m,n]=size(A);
+-nsp->A1= sparse_from_triplet(m,n,i2m(beg),i2m(ind),val);
+-nsp->if norm(A1-A)<>0 then pause;end
