@@ -45,6 +45,11 @@ extern "C" {
 
 using namespace std;
 
+double nsp_coin_dbl_max(void)
+{
+  return COIN_DBL_MAX;
+}
+
 /* provide our own print handlers */
 
 class NReadDerivedHandler : public CoinMessageHandler {

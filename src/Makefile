@@ -1,37 +1,35 @@
-SHELL = /bin/sh
+SHELL = /bin/csh
 
-SCIDIR=../../..
-SCIDIR1=..\..\..
-
-LIBRARY=libcoinor.a
-
-OBJS= nspcoinmp.o nspclp.o nspcoinor-IN.o nspcoinread.o
-
+include ../Path.incl 
 include $(SCIDIR)/Makefile.incl
 
-COIN_FLAGS=`/usr/bin/pkg-config gtk+-2.0 coinmp --cflags`
-COIN_LIBS=`/usr/bin/pkg-config gtk+-2.0 coinmp --libs`
+all	:: Makelib job 
+	make -f Makelib
 
-CFLAGS = $(CC_OPTIONS) $(COIN_FLAGS)
-CXXFLAGS = $(CC_OPTIONS) $(COIN_FLAGS)
+Makelib : builder.sce
+	@echo running builder 
+	@$(SCIDIR)/bin/nsp -nw -e "exec('builder.sce');quit" -errcatch >& /dev/null;
 
-# extra libraries needed for linking 
-# it is mandatory on win32 to give this extra argument.
-OTHERLIBS=$(COIN_LIBS)
+job	: 
+	make -f Makelib
 
-include $(SCIDIR)/config/Makeso.incl
+tests	: all
+	make -f Makelib tests 
 
-all:: Makefile.mak
-
-Makefile.mak	: Makefile
-	$(SCIDIR)/scripts/Mak2VCMak Makefile
-
-Makefile.amk	: Makefile
-	$(SCIDIR)/scripts/Mak2ABSMak Makefile
+clean	::
+	@echo Cleaning 
+	@$(RM) -f -r *.o *.lo *.la *.so *.sl *.a *.dia .job.sce so_locations
+	@$(RM) -f -r .libs
 
 distclean:: clean 
+	@$(RM) -f *.dia  *_gateway.c 
 
-clean:: 
-	@$(RM) *.o *.lo 
-	@$(RM) -r */.libs 
+
+
+
+
+
+
+
+
 

@@ -1,0 +1,7 @@
+ .libs
+ Makelib
+ Path.incl
+ libcoinmp.la
+ nspcoinmp.lo
+ nspcoinor-IN.lo
+ nspcoinread.lo
