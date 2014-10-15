@@ -40,7 +40,7 @@ extern "C" {
   int  int_coinmp_readlp(Stack stack, int rhs, int opt, int lhs);
   static NspSpColMatrix *spcolmatrix_from_triplet(const char *name,const CoinBigIndex *jc,
 						  const int *ir,const double *pr,int nelem,int m, int n);
-
+  double nsp_coin_dbl_max(void);
 }
 
 using namespace std;

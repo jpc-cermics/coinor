@@ -7,10 +7,10 @@ if exists('%nsp') then
 end 
 
 // [3] the part devoted to shared lib generation 
-ilib_name  = 'libcoinmp' 		// interface library name 
+ilib_name  = 'libcoinor' 		// interface library name 
 
 // objects files (but do not give mexfiles here)
-files = ['nspcoinor-IN.o';'nspcoinmp.o';'nspcoinread.o'];
+files = ['nspcoinor-IN.o';'nspcoinmp.o';'nspcoinread.o';'nspclp.o'];
 
 // other libs needed for linking (must be shared library names)
 // libs  = ['lib/liblpsolve55']; 				

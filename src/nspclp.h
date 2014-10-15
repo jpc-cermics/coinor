@@ -51,7 +51,7 @@ extern "C" {
 			   NspIMatrix*Cmatbeg, NspIMatrix *Cmatind, NspMatrix *Cmatval, 
 			   NspMatrix *lower, NspMatrix *upper, NspMatrix *Objective,
 			   NspIMatrix*Qmatbeg, NspIMatrix *Qmatind, NspMatrix *Qmatval, 
-			   NspMatrix *Rhs,  NspMatrix *Lhs, char *var_type[], NspMatrix *X,NspMatrix *Lambda,
+			   NspMatrix *Rhs,  NspMatrix *Lhs,char *var_type[],  NspMatrix *X,NspMatrix *Lambda,
 			   NspMatrix *RetCost,NspMatrix *Retcode,
 			   const char *filename,int save_only);
 
