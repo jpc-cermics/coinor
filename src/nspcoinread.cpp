@@ -160,25 +160,40 @@ int int_coinmp_readlp(Stack stack, int rhs, int opt, int lhs)
       m.setInfinity(infinity);   
       
       /* read pb */
-      if(!strcmp(type_str,"mps") || !strcmp(type_str,"qps"))
-	err = m.readMps(Fname_expanded,"mps",nbr_sos_sets,sets);
-      else if(!strcmp(type_str,"mod"))
+      try 
 	{
+	  if(!strcmp(type_str,"mps") || !strcmp(type_str,"qps"))
+	    {
+	      err = m.readMps(Fname_expanded,"mps",nbr_sos_sets,sets);
+	    }
+	  else if(!strcmp(type_str,"mod"))
+	    {
 #ifdef COIN_HAS_GLPK
-	  char *data = NULL;
-	  err = m.readGMPL(Fname_expanded,data,false);
+	      char *data = NULL;
+	      err = m.readGMPL(Fname_expanded,data,false);
 #else 
-	  Scierror("Error: failed to read file %s, coin library was not compiled with glpk \n",Fname);
-	  return RET_BUG;
+	      Scierror("Error: failed to read file %s, coin library was not compiled with glpk \n",Fname);
+	      return RET_BUG;
 #endif 
+	    }
+	  else if(!strcmp(type_str,"gms"))
+	    {
+	      err = m.readGms(Fname_expanded,"gms",false);
+	    }
+	  if ( err ) 
+	    {
+	      Scierror("Error: failed to read file %s, Error Code: %d\n",Fname,err);
+	      return RET_BUG;
+	    }
 	}
-      else if(!strcmp(type_str,"gms"))
-	err = m.readGms(Fname_expanded,"gms",false);
-      if ( err ) 
-	{
-	  Scierror("Error: failed to read file %s, Error Code: %d\n",Fname,err);
-	  return RET_BUG;
-        }
+      catch (CoinError e) {
+	Scierror("Error: while reading Lp file \n"); // e.message());
+	return RET_BUG;
+      }
+      catch (...) {
+	Scierror("Error: while reading Lp file \n");
+	return RET_BUG;
+      }
       
       if ( ( D = nsp_hash_create(NVOID, 20) ) == NULLHASH) return RET_BUG;
       
@@ -370,6 +385,20 @@ int int_coinmp_readlp(Stack stack, int rhs, int opt, int lhs)
       /* Setup Options */
       l.setInfinity(numeric_limits<double>::infinity());
       /* Read Problem */
+      try 
+	{
+	  l.readLp(Fname_expanded);
+	}
+      catch (CoinError e) {
+	Scierror("Error: while reading Lp file \n"); // e.message());
+	return RET_BUG;
+      }
+      catch (...) {
+	Scierror("Error: while reading Lp file \n");
+	return RET_BUG;
+      }
+
+
       l.readLp(Fname_expanded);
 
       if ( ( D = nsp_hash_create(NVOID, 20) ) == NULLHASH) return RET_BUG;
