@@ -50,28 +50,32 @@ if abs((dot(lambda,b)-fopt)/fopt) >= 4*%eps then, pause, end
 A= [-1 -1; -1 2; -2 1];
 b=[-3; -5; 5];
 c=[1; 3];
-[xopt,fopt,flag] = linprog_clp(c,A,b,[],[],sense="max");
+[xopt,fopt,flag] = linprog_clp(c,A,b,[],[],sense="max",options=options);
 if flag <> 2 then pause;end // flag is 2 for unbounded pb 
 
 //////////////////////////////////////////////////////////////////////////////
 // tests on easy mips (from netlib)
 
+// get the possible options
+options = coinmp_options();
+options.LogLevel=0;
+
 // bal8x12.mps is a mip with x >= 0 (no need to provide lb=0)
 [c,A,b,Ae,be,sense,lb,ub,binprog,intprog,var_type] = readlp("NSP/tests/bal8x12.mps",verb=0);
 Fe = 471.55; 
-[xopt,fopt,flag] = linprog_coinmp(c,A,b,Ae,be,ub=ub,var_type=var_type);
+[xopt,fopt,flag] = linprog_coinmp(c,A,b,Ae,be,ub=ub,var_type=var_type,options=options);
 if abs((fopt-Fe)/Fe) >= 4*%eps then, pause, end
 
 // gr4x6.mps is a mip with x >= 0 (no need to provide lb=0)
 [c,A,b,Ae,be,sense,lb,ub,binprog,intprog,var_type] = readlp("NSP/tests/gr4x6.mps",verb=0);
 Fe = 202.35; 
-[xopt,fopt,flag] = linprog_coinmp(c,A,b,Ae,be,ub=ub,var_type=var_type);
+[xopt,fopt,flag] = linprog_coinmp(c,A,b,Ae,be,ub=ub,var_type=var_type,options=options);
 if abs((fopt-Fe)/Fe) >= 4*%eps then, pause, end
 
 // bk4x3.mps is a mip with x >= 0 (no need to provide lb=0)
 [c,A,b,Ae,be,sense,lb,ub,binprog,intprog,var_type] = readlp("NSP/tests/bk4x3.mps",verb=0);
 Fe = 350.0; 
-[xopt,fopt,flag] = linprog_coinmp(c,A,b,Ae,be,ub=ub,var_type=var_type);
+[xopt,fopt,flag] = linprog_coinmp(c,A,b,Ae,be,ub=ub,var_type=var_type,options=options);
 if abs((fopt-Fe)/Fe) >= 4*%eps then, pause, end
 
 // basic test for quadratic programming 

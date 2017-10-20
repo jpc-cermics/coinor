@@ -1,37 +1,36 @@
-SHELL=/bin/csh
+SHELL = /bin/sh
+
 .SUFFIXES: .dia .tst .vl
 
-SCIDIR=../../../
+TOP=..
 
-TESTS= linprog.dia clpsparse.dia examples.dia
+include $(TOP)/Path.incl 
+#include $(TOP)/$(SCIDIR)/Makefile.incl
 
-VL=$(ALG:.dia=.vl) $(TESTS:.dia=.vl) 
+NSP=$(TOP)/$(SCIDIR)/bin/nsp
 
-all : algebra basic 
+TESTS= linprog.dia clpsparse.dia examples.dia alfonsi.dia
+
+VL=$(TESTS:.dia=.vl) 
+
+tests: $(TESTS) 
 
 vl  : $(VL)
 
-algebra : $(ALG) 
-
-basic : $(TESTS) 
-
-tests: all
-
 .tst.dia :
 	@echo -n "testing $*: "
-	@$(SCIDIR)/bin/nsp -nw -e "nsptest('$*.tst');quit" 
+	@$(NSP) -ns -nw -e "exec ../src/loader.sce;nsptest('$*.tst');quit" 
 
 #export G_DEBUG=gc-friendly;export G_SLICE=always-malloc;valgrind --suppressions=tests/valgrind.supp --leak-check=full  bin/scilex -nw 
 
 .tst.vl :
 	@echo -n "valgrind $*: "
-	@setenv G_DEBUG gc-friendly; setenv G_SLICE always-malloc;valgrind --suppressions=valgrind.supp --leak-check=full  ../bin/scilex -nw -e "exec('$*.tst');quit" >& $*.vl
+	@setenv G_DEBUG gc-friendly; setenv G_SLICE always-malloc;valgrind --suppressions=valgrind.supp --leak-check=full $(TOP)/$(SCIDIR)/bin/scilex -ns -nw -e "exec ../src/loader.sce;exec('$*.tst');quit" >& $*.vl
 	@echo  " $*.vl"
 
-distclean	:
+distclean:
 	@echo cleaning tests
-	@$(RM) $(TESTS) $(ALG) $(VL) 
-	@$(SCIDIR)/bin/nsplibtool OBJS=addinter.o LIBRARY=libaddinter distclean
+	@$(RM) $(TESTS) 
 
 clean:	distclean
 

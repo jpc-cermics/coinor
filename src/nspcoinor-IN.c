@@ -353,10 +353,11 @@ int int_coinmp_solve(Stack stack, int rhs, int opt, int lhs)
 	}
     }
 
-  /* 
-  if ( get_solver_options(stack, Options, &options) == FAIL )
-    return RET_BUG;
-  */
+  /* We directly pass Options to the solver since the converter 
+   * from NspHash to coinmp is inside  nsp_coinmp_solve
+   * if ( get_solver_options(stack, Options, &options) == FAIL )
+   *  return RET_BUG;
+   */
 
   if ( strcmp(sense_str,"min") == 0 )
     sense = 0;

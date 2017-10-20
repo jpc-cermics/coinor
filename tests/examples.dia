@@ -17,22 +17,7 @@
 -nsp->//
 -nsp->// a set of examples compared with linprog 
 -nsp->load_toolbox('nspcoinor');
--nsp->libname='nspcplex'
--nsp->libtitle='nspcplex toolbox';
--nsp->// macros. 
--nsp->//add_lib('macros',compile=%t);
--nsp->// loader for src 
--nsp->exec('src/loader.sce');
--nsp->// this loader is not generated 
--nsp->// we have added the global=%t option 
--nsp->// because some other dynamic libraries 
--nsp->// may want to use symbols defined internally here.
--nsp->libcoinor_path=file('join',['.','libcoinor'+%shext]);
--nsp->addinter(libcoinor_path,'libcoinor',global=%t);
--nsp->clear libcoinor_path;
--nsp->clear libcoinor_path;
--nsp->printf(libtitle+' loaded\n');
-nspcplex toolbox loaded
+nspcoinor toolbox not loaded (not found in toolboxes)
 -nsp->// example 1 
 -nsp->//-----------
 -nsp->c= [50; 40; 70; 80]; 
@@ -203,7 +188,10 @@ nspcplex toolbox loaded
 -nsp->[xopt,fopt,flag] = linprog(c,A,b,Ae,be,binprog=%t,sense=sense);
 -nsp->if abs(fopt - optimalValue) > 1.e-7 then pause;end
 -nsp->// Binary variables we use coinmp 
--nsp->[xopt1,fopt1,flag1,extra1] = linprog_coinmp(c,A,b,Ae,be,ub=ub,lb=lb,var_type=ctyp, sense=sense);
+-nsp->// get the possible options
+-nsp->options = coinmp_options();
+-nsp->options.LogLevel=0;
+-nsp->[xopt1,fopt1,flag1,extra1] = linprog_coinmp(c,A,b,Ae,be,ub=ub,lb=lb,var_type=ctyp, sense=sense, options=options);
 -nsp->//if norm(xopt-xopt1) >= 1.e-8 then pause;end 
 -nsp->if abs(fopt1 - optimalValue) > 1.e-7 then pause;end
 -nsp->// Exmip1
@@ -235,7 +223,7 @@ nspcplex toolbox loaded
 -nsp->[xopt,fopt,flag] = linprog(c,A,b,Ae,be,var_type=ctyp1,ub=ub1,lb=lb,sense=sense);
 -nsp->if abs(fopt - optimalValue) > 1.e-7 then pause;end
 -nsp->[xopt1,fopt1,flag1,extra1] = linprog_coinmp(c,A,b,Ae,be,ub=ub,lb=lb, ...
-==>					   var_type=ctyp, sense=sense);
+==>					   var_type=ctyp, sense=sense, options=options);
 -nsp->// here xopt and xopt1 are optimal but not the same
 -nsp->// if norm(xopt-xopt1) >= 1.e-8 then pause;end 
 -nsp->if abs(fopt1 - optimalValue) > 1.e-7 then pause;end
@@ -270,6 +258,6 @@ nspcplex toolbox loaded
 -nsp->lb(1)=0;ub(1)=0;
 -nsp->[xopt,fopt,flag,extra] = linprog(c,Al,bl,Ae,be,ub=ub,lb=lb,sense=sense);//,semi_cont=1);
 -nsp->// test semi_cont 
--nsp->[xopt1,fopt1,flag1,extra1] = linprog_coinmp(c,Al,bl,Ae,be,ub=ub,lb=lb,sense=sense,semi_cont=1);
+-nsp->[xopt1,fopt1,flag1,extra1] = linprog_coinmp(c,Al,bl,Ae,be,ub=ub,lb=lb,sense=sense,semi_cont=1, options=options);
 -nsp->if abs(fopt - optimalValue) > 1.e-7 then pause;end
 -nsp->if abs(fopt1 - optimalValue) > 1.e-7 then pause;end

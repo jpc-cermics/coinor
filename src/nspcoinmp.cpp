@@ -86,7 +86,10 @@ int nsp_coinmp_solve(const char* problemName, int sense, int ncols, int nrows,
   int result;
   /* pass extra arguments to message callbacks */
   const char *userParam = "TEST";
-  hProb = CoinCreateProblem(problemName);  
+  hProb = CoinCreateProblem(problemName);
+
+  nsp_coinmp_set_options(hProb,Options);
+  
   result = CoinLoadMatrix(hProb, colCount, rowCount, nonZeroCount, rangeCount,
 			  objectSense, objectConst, objectCoeffs, lowerBounds, upperBounds, 
 			  rowType, rhsValues, rangeValues, matrixBegin, matrixCount, 
@@ -125,7 +128,7 @@ int nsp_coinmp_solve(const char* problemName, int sense, int ncols, int nrows,
     result = CoinRegisterMipNodeCallback(hProb, &MipNodeCallback, (void*)userParam);
   }
 
-  nsp_coinmp_set_options(hProb,Options);
+  
 
   if ( filename != NULL ) 
     {
@@ -217,16 +220,16 @@ static int nsp_coinmp_set_options(HPROB hProb, NspHash *H)
 	      double val = ((NspMatrix *) Obj)->R[0];
 	      if ( t == 2 || t == 1) 
 		{
-		  Sciprintf("ZOptions %s=%d\n",NSP_OBJECT(Obj)->name,(int) val);
+		  //Sciprintf("ZOptions %s=%d\n",NSP_OBJECT(Obj)->name,(int) val);
 		  CoinSetIntOption(hProb, id, (int) val);
 		}
 	      else if ( t == 4 ) 
 		{
+		  //Sciprintf("ZOptions %s=%d\n",NSP_OBJECT(Obj)->name,val);
 		  CoinSetRealOption(hProb, id, val);
-		  Sciprintf("ZOptions %s=%d\n",NSP_OBJECT(Obj)->name,val);
 		}
 	      else
-		Sciprintf("Warning: Unkown option type %d, this is a bug\n",id);
+		Sciprintf("Warning: Unknown option type %d, this is a bug\n",id);
 	    }
 	  else
 	    {

@@ -15,22 +15,10 @@
 -nsp->// along with this program; if not, write to the Free Software
 -nsp->// Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 -nsp->load_toolbox('nspcoinor');
--nsp->libname='nspcplex'
--nsp->libtitle='nspcplex toolbox';
--nsp->// macros. 
--nsp->//add_lib('macros',compile=%t);
--nsp->// loader for src 
--nsp->exec('src/loader.sce');
--nsp->// this loader is not generated 
--nsp->// we have added the global=%t option 
--nsp->// because some other dynamic libraries 
--nsp->// may want to use symbols defined internally here.
--nsp->libcoinor_path=file('join',['.','libcoinor'+%shext]);
--nsp->addinter(libcoinor_path,'libcoinor',global=%t);
--nsp->clear libcoinor_path;
--nsp->clear libcoinor_path;
--nsp->printf(libtitle+' loaded\n');
-nspcplex toolbox loaded
+nspcoinor toolbox not loaded (not found in toolboxes)
+-nsp->// Note:
+-nsp->// A and Ae must have the same number of colums
+-nsp->// if A is empty it must be a 0xn empty matrix is Ae is mxn
 -nsp->/////////////////////////////////////////////////////////////////////////////////
 -nsp->// test 1-1:   max c'*x
 -nsp->//             Ax <= b
@@ -55,24 +43,27 @@ nspcplex toolbox loaded
 -nsp->A= [-1 -1; -1 2; -2 1];
 -nsp->b=[-3; -5; 5];
 -nsp->c=[1; 3];
--nsp->[xopt,fopt,flag] = linprog_clp(c,A,b,[],[],sense="max");
+-nsp->[xopt,fopt,flag] = linprog_clp(c,A,b,[],[],sense="max",options=options);
 -nsp->if flag <> 2 then pause;end // flag is 2 for unbounded pb 
 -nsp->//////////////////////////////////////////////////////////////////////////////
 -nsp->// tests on easy mips (from netlib)
+-nsp->// get the possible options
+-nsp->options = coinmp_options();
+-nsp->options.LogLevel=0;
 -nsp->// bal8x12.mps is a mip with x >= 0 (no need to provide lb=0)
 -nsp->[c,A,b,Ae,be,sense,lb,ub,binprog,intprog,var_type] = readlp("NSP/tests/bal8x12.mps",verb=0);
 -nsp->Fe = 471.55; 
--nsp->[xopt,fopt,flag] = linprog_coinmp(c,A,b,Ae,be,ub=ub,var_type=var_type);
+-nsp->[xopt,fopt,flag] = linprog_coinmp(c,A,b,Ae,be,ub=ub,var_type=var_type,options=options);
 -nsp->if abs((fopt-Fe)/Fe) >= 4*%eps then, pause, end
 -nsp->// gr4x6.mps is a mip with x >= 0 (no need to provide lb=0)
 -nsp->[c,A,b,Ae,be,sense,lb,ub,binprog,intprog,var_type] = readlp("NSP/tests/gr4x6.mps",verb=0);
 -nsp->Fe = 202.35; 
--nsp->[xopt,fopt,flag] = linprog_coinmp(c,A,b,Ae,be,ub=ub,var_type=var_type);
+-nsp->[xopt,fopt,flag] = linprog_coinmp(c,A,b,Ae,be,ub=ub,var_type=var_type,options=options);
 -nsp->if abs((fopt-Fe)/Fe) >= 4*%eps then, pause, end
 -nsp->// bk4x3.mps is a mip with x >= 0 (no need to provide lb=0)
 -nsp->[c,A,b,Ae,be,sense,lb,ub,binprog,intprog,var_type] = readlp("NSP/tests/bk4x3.mps",verb=0);
 -nsp->Fe = 350.0; 
--nsp->[xopt,fopt,flag] = linprog_coinmp(c,A,b,Ae,be,ub=ub,var_type=var_type);
+-nsp->[xopt,fopt,flag] = linprog_coinmp(c,A,b,Ae,be,ub=ub,var_type=var_type,options=options);
 -nsp->if abs((fopt-Fe)/Fe) >= 4*%eps then, pause, end
 -nsp->// basic test for quadratic programming 
 -nsp->//     Maximize
@@ -97,6 +88,8 @@ nspcplex toolbox loaded
 -nsp->sol= 2.015617;
 -nsp->xopt=[0.139115;0.598465;0.898396];
 -nsp->lambda=[18.642254;30.757886];
+-nsp->[xopt1,fopt1,flag1,lambda1] = linprog_clp(c,A,b,sparse([]),[],ub=ub,lb=lb,sense="max",Q=Q);
+-nsp->// Q can be sparse
 -nsp->[xopt1,fopt1,flag1,lambda1] = linprog_clp(c,A,b,sparse([]),[],ub=ub,lb=lb,sense="max",Q=Q);
 -nsp->if (fopt1- 2.015617) > 1.e-5 then pause;end
 -nsp->if norm(xopt1-xopt1) > 1.e-5 then pause;end

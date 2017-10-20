@@ -228,7 +228,11 @@ if abs(fopt - optimalValue) > 1.e-7 then pause;end
 
 // Binary variables we use coinmp 
 
-[xopt1,fopt1,flag1,extra1] = linprog_coinmp(c,A,b,Ae,be,ub=ub,lb=lb,var_type=ctyp, sense=sense);
+// get the possible options
+options = coinmp_options();
+options.LogLevel=0;
+
+[xopt1,fopt1,flag1,extra1] = linprog_coinmp(c,A,b,Ae,be,ub=ub,lb=lb,var_type=ctyp, sense=sense, options=options);
 //if norm(xopt-xopt1) >= 1.e-8 then pause;end 
 if abs(fopt1 - optimalValue) > 1.e-7 then pause;end
 
@@ -267,7 +271,7 @@ ub1=ub;ub1(3:4)=1;
 if abs(fopt - optimalValue) > 1.e-7 then pause;end
 
 [xopt1,fopt1,flag1,extra1] = linprog_coinmp(c,A,b,Ae,be,ub=ub,lb=lb, ...
-					   var_type=ctyp, sense=sense);
+					   var_type=ctyp, sense=sense, options=options);
 // here xopt and xopt1 are optimal but not the same
 // if norm(xopt-xopt1) >= 1.e-8 then pause;end 
 if abs(fopt1 - optimalValue) > 1.e-7 then pause;end
@@ -314,7 +318,7 @@ lb(1)=0;ub(1)=0;
 [xopt,fopt,flag,extra] = linprog(c,Al,bl,Ae,be,ub=ub,lb=lb,sense=sense);//,semi_cont=1);
 
 // test semi_cont 
-[xopt1,fopt1,flag1,extra1] = linprog_coinmp(c,Al,bl,Ae,be,ub=ub,lb=lb,sense=sense,semi_cont=1);
+[xopt1,fopt1,flag1,extra1] = linprog_coinmp(c,Al,bl,Ae,be,ub=ub,lb=lb,sense=sense,semi_cont=1, options=options);
 if abs(fopt - optimalValue) > 1.e-7 then pause;end
 if abs(fopt1 - optimalValue) > 1.e-7 then pause;end
 
