@@ -19,9 +19,10 @@ libs =[];
 // table of (scilab_name,interface-name or mexfile-name, type) 
 table =[]; // 'lpsolve', 'int_lpsolve',	'cnsp'];
 
-// we need  gtk+-2.0 because of imatrices 
-ldflags = "`pkg-config gtk+-2.0 coinmp --libs`";
-cflags = "`pkg-config gtk+-2.0 coinmp --cflags`"
+// we use imatrix.h which needs glib.h if -DNOGLIBH is not added 
+
+ldflags = "`pkg-config coinmp --libs`";
+cflags = "`pkg-config coinmp --cflags` -DNOGLIBH"
 
 //function ilib_build(ilib_name,table,files,libs,...
 //		    makename='Makelib',ldflags="",cflags="",fflags="",verbose=%t)

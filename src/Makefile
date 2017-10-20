@@ -1,35 +1,31 @@
-SHELL = /bin/csh
+SHELL = /bin/sh
 
-include ../Path.incl 
-include $(SCIDIR)/Makefile.incl
+TOP=..
 
-all	:: Makelib job 
-	make -f Makelib
+include $(TOP)/Path.incl 
+include $(TOP)/$(SCIDIR)/Makefile.incl
 
-Makelib : builder.sce
-	@echo running builder 
-	@$(SCIDIR)/bin/nsp -nw -e "exec('builder.sce');quit" -errcatch >& /dev/null;
+NSP=$(TOP)/$(SCIDIR)/bin/nsp
+LIB=modnum
 
-job	: 
-	make -f Makelib
+# if Makelib exists we run it since it can use parralel compilation
+# then we always run the builder to be sure that loader.sce files are
+# also generated
 
-tests	: all
-	make -f Makelib tests 
+all::
+	@if test -f Makelib; then \
+		$(MAKE) -s -f Makelib $(MFLAGS); \
+	fi
+	@echo "running builder (be patient)"; \
+		$(NSP) -nw -e "exec('builder.sce');quit" -errcatch > /dev/null ; \
+	fi
+
+tests	:: all
 
 clean	::
-	@echo Cleaning 
-	@$(RM) -f -r *.o *.lo *.la *.so *.sl *.a *.dia .job.sce so_locations
-	@$(RM) -f -r .libs
+	@if test -f Makelib; then make -s -f Makelib clean;fi
 
-distclean:: clean 
-	@$(RM) -f *.dia  *_gateway.c 
-
-
-
-
-
-
-
-
-
+distclean::
+	@if test -f Makelib; then make -s -f Makelib distclean;fi
+	@$(RM) -f Makelib
 

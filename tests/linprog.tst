@@ -17,6 +17,10 @@
 
 load_toolbox('nspcoinor');
 
+// Note:
+// A and Ae must have the same number of colums
+// if A is empty it must be a 0xn empty matrix is Ae is mxn
+
 /////////////////////////////////////////////////////////////////////////////////
 // test 1-1:   max c'*x
 //             Ax <= b
@@ -97,6 +101,10 @@ Q= -[ 33,-06,00;
 sol= 2.015617;
 xopt=[0.139115;0.598465;0.898396];
 lambda=[18.642254;30.757886];
+
+[xopt1,fopt1,flag1,lambda1] = linprog_clp(c,A,b,sparse([]),[],ub=ub,lb=lb,sense="max",Q=Q);
+
+// Q can be sparse
 
 [xopt1,fopt1,flag1,lambda1] = linprog_clp(c,A,b,sparse([]),[],ub=ub,lb=lb,sense="max",Q=Q);
 

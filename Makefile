@@ -1,46 +1,64 @@
 SHELL=/bin/sh
-MFLAGS=-s --no-print-directory
 
-include Path.incl
-include $(SCIDIR)/Makefile.incl
+SILENT=$(findstring -s,$(MFLAGS))
+NSP=../../bin/nsp 
 
-all :: builder.sce
-	@echo "running builder (be patient)"
-	@$(SCIDIR)/bin/nsp -nw -e "exec('builder.sce');quit" -errcatch > /dev/null 2>&1;
-	@echo "At prompt, enter:";
-	@echo "-->exec loader.sce";
-	@echo "----------------------------------------------------";
+GNUMAKEFLAGS=--no-print-dir
 
-all ::
-	cd src && $(MAKE) all
+all:
+	@if test -f Path.incl; then \
+		$(MAKE) $(MFLAGS) all-dirs ; \
+	else \
+	  ( if test -f $(NSP); then \
+		( if test "x$(SILENT)" != "x-s"; then echo "running builder"; fi && \
+		$(NSP) -nw -ns -e "exec('builder.sce');quit" -errcatch > /dev/null ) ; \
+	    else \
+	      echo "Fisrt time you run make;start nsp and run the file builder.sce"; \
+	    fi);\
+	fi
 
-clean ::
-	@echo "Clean src "
-	@cd src && $(MAKE) $(MFLAGS) clean
+SUBDIRS =src
+DIR=
 
-cleanm ::
-	@echo "Clean macros"
-	@cd macros && $(MAKE) $(MFLAGS) clean
+all-dirs:
+	@case '${MFLAGS}' in *[ik]*) set +e;; esac; \
+	for i in $(SUBDIRS) ;\
+	do \
+		(cd $$i && if test "x$(SILENT)" != "x-s"; then echo "making all in $(DIR)$$i ";fi && \
+		$(MAKE) $(MFLAGS) DIR=$(DIR)$$i/ all ); \
+	   	IER=$$? &&\
+	   	case $$IER in\
+	    	0) ;;\
+	    	*) echo "make $@ in sub directory $$i failed"; \
+	       	   case '${MFLAGS}' in *[k]*) echo "carrying on compilation (-k used)";; *) exit $$IER;;esac;\
+	   	esac;\
+	done
 
-distclean ::
-	@echo "Clean src"
-	@cd src && $(MAKE) distclean > /dev/null 2>&1;
+clean distclean ::
+	@if test -f Path.incl; then \
+	( case '${MFLAGS}' in *[ik]*) set +e;; esac; \
+	for i in $(SUBDIRS) ; \
+	do \
+		(cd $$i && if test "x$(SILENT)" != "x-s"; then echo "making $@ in $(DIR)$$i ";fi && \
+		$(MAKE) $(MFLAGS) DIR=$(DIR)$$i/ $@ ); \
+	   	IER=$$? &&\
+	   	case $$IER in\
+	    	0) ;;\
+	    	*) echo "make $@ in sub directory $$i failed"; \
+	       	   case '${MFLAGS}' in *[k]*) echo "carrying on compilation (-k used)";; *) exit $$IER;;esac;\
+	   	esac;\
+	done ); \
+	else $(MAKE) $(MFLAGS) distclean-base; \
+	fi
 
-cleanm	::
-	@echo "Clean macros"
-	@cd macros && $(MAKE) distclean > /dev/null 2>&1;
+distclean::
+	@if test -f Path.incl; then $(RM) Path.incl; fi
 
-PATH_INCL= $(wildcard Path.incl)
 
-test ::
-ifeq ($(PATH_INCL),Path.incl)
-	@echo $(PATH_INCL) "is already present"
-else
-	@echo Path.incl "copied from ../../"
-	@cp ../../Path.incl .
-endif
+# target to make a distclean when we do not have a Path.incl
 
-up:
-	@echo "Update cvs"
-	@cvs up 
+distclean-base::
+	@find . \( -name .libs -o -name '*.o' -o -name '*.so' -o -name '*.a' -name '*.bin' \) \
+		-exec \rm -f {} \;
+
 

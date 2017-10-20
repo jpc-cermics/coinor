@@ -5,7 +5,7 @@ libname='nspcoinor'
 // generate Path.incl file 
 // -----------------------
 
-ilib_path_incl()
+ilib_path_incl(relative=%t)
 
 // compile shared library in src.
 // ------------------------------
