@@ -91,7 +91,7 @@ int nsp_clp_solve(nsp_clp_params *options,int sense, int ncols, int nrows, int n
 	    for ( i=0; i < ncols ; i++)
 	      {
 		if ( var_type[i] != NULL &&  var_type[i][0]== 'I') 
-		  modelByColumn->setInteger(i);
+		  modelPrimalDual->setInteger(i);
 	      }
 	  }
 	modelPrimalDual->setOptimizationDirection((sense==0) ? 1: -1);

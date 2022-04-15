@@ -18,7 +18,6 @@ all::
 	fi
 	@echo "running builder (be patient)"; \
 		$(NSP) -nw -e "exec('builder.sce');quit" -errcatch > /dev/null ; \
-	fi
 
 tests	:: all
 
