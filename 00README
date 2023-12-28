@@ -1,0 +1,2 @@
+using coinor with nsp 
+apt-get install  coinor-libcoinmp-dev
